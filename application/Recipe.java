@@ -9,8 +9,8 @@ import javax.net.ssl.HttpsURLConnection;
 import org.json.*;
 
 
-// javac -cp .:java-json.jar Recipe.java - TO COMPILE
-// java -cp .:java-json.jar Recipe - TO DEPLOY
+// javac -cp .:../libs/java-json.jar Recipe.java - TO COMPILE
+// java -cp .:../libs/java-json.jar Recipe - TO DEPLOY
 
 //main class for API communication, same name as .java file
 //sample Alcohol API, lol
@@ -102,7 +102,8 @@ public class Recipe {
 		String recipeNames[] = new String[resHits.length()];
 
 		for (int i=0; i<resHits.length();i++){
-			recipeNames[i] = resHits.getJSONObject(i).recipe.getString("label");
+			JSONObject current = resHits.getJSONObject(i);
+			recipeNames[i] = current.getJSONObject("recipe").getString("label");
 			System.out.println(recipeNames[i]);
 		}
 
