@@ -27,9 +27,10 @@ public class Recipe {
 		Recipe http = new Recipe();
 
 		System.out.println("1) Send HTTP GET to API");
-		String response = http.sendGet("pork");
+		String response = http.sendGet("cheese,vegan");
 
-		http.parseJsonParams(response);
+		String message = http.parseJsonParams(response);
+		System.out.println(message);
 	}
 
 	//function for HTTP GET request
@@ -139,7 +140,7 @@ public class Recipe {
 
 	}
 
-	private void parseJsonParams(String inputJson) throws Exception {
+	private String parseJsonParams(String inputJson) throws Exception {
 		String jsonString = inputJson;
 		
 		//parser
@@ -150,22 +151,27 @@ public class Recipe {
 		JSONArray resHits = res.getJSONArray("hits");
 
 		//taking top recipe only, since from and to tags are 0, 1
-		String recipeName;
-		String calories;
+		String recipeName = "default";
 		JSONArray ingredients;
 
+		String out = "default";
 		String recipeNames[] = new String[resHits.length()];
+		int x=0;
 		for (int i=0; i<resHits.length();i++){
 			JSONObject current = resHits.getJSONObject(i);
 			recipeNames[i] = current.getJSONObject("recipe").getString("label");
 			
 			recipeName = current.getJSONObject("recipe").getString("label");
 			ingredients = current.getJSONObject("recipe").getJSONArray("ingredientLines");
-
-			//System.out.println(ingredients.getClass().getName());
-			for(i=0; i<ingredients.length(); i++){
-				System.out.println(ingredients.getString(i));
+			out = "With those ingredients you could make "+recipeName+".";
+			for (x=0; x<ingredients.length(); x++){
+				out = out + ingredients.getString(x) + ",";
 			}
 		}
+
+		if (x>0){
+			out = out + " are the required ingredients";
+		}
+		return out;
 	}
 }
