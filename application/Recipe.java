@@ -27,15 +27,13 @@ public class Recipe {
 		Recipe http = new Recipe();
 
 		System.out.println("1) Send HTTP GET to API");
-		http.sendGet();
+		String response = http.sendGet();
 
-		//System.out.println("2) Send HTTP POST to API");
-		//http.sendPost();
-
+		http.parseJsonParams(response);
 	}
 
 	//function for HTTP GET request
-	private void sendGet() throws Exception { //need to throw exception to comply with Java's Catch or Specify requirement
+	private String sendGet() throws Exception { //need to throw exception to comply with Java's Catch or Specify requirement
 
 		/*
 		TODO:
@@ -91,22 +89,7 @@ public class Recipe {
 		}
 		inReader.close();
 
-		//Output to out stream
-		//System.out.println(response.toString());
-
-		String jsonString = response.toString();
-		JSONTokener tokener = new JSONTokener(jsonString);
-
-		JSONObject res = (JSONObject) tokener.nextValue();
-		JSONArray resHits = res.getJSONArray("hits");
-		String recipeNames[] = new String[resHits.length()];
-
-		for (int i=0; i<resHits.length();i++){
-			JSONObject current = resHits.getJSONObject(i);
-			recipeNames[i] = current.getJSONObject("recipe").getString("label");
-			System.out.println(recipeNames[i]);
-		}
-
+		return response.toString();
 	}
 
 	/*
@@ -155,4 +138,18 @@ public class Recipe {
 
 	}
 
+	private void parseJsonParams(String inputJson) throws Exception {
+		String jsonString = inputJson;
+		JSONTokener tokener = new JSONTokener(jsonString);
+
+		JSONObject res = (JSONObject) tokener.nextValue();
+		JSONArray resHits = res.getJSONArray("hits");
+		String recipeNames[] = new String[resHits.length()];
+
+		for (int i=0; i<resHits.length();i++){
+			JSONObject current = resHits.getJSONObject(i);
+			recipeNames[i] = current.getJSONObject("recipe").getString("label");
+			System.out.println(recipeNames[i]);
+		}
+	}
 }
