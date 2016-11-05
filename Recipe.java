@@ -5,6 +5,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
+//Java library concerning JSON parsing
+import org.json.*;
+
+
+// javac -cp .:java-json.jar Recipe.java - TO COMPILE
+// java -cp .:java-json.jar Recipe - TO DEPLOY
 
 //main class for API communication, same name as .java file
 //sample Alcohol API, lol
@@ -79,14 +85,26 @@ public class Recipe {
 		String inputLine;
 		StringBuffer response = new StringBuffer();
 
-		//store respones to string
+		//store responses to string
 		while ((inputLine = inReader.readLine()) != null) {
 			response.append(inputLine);
 		}
 		inReader.close();
 
 		//Output to out stream
-		System.out.println(response.toString());
+		//System.out.println(response.toString());
+
+		String jsonString = response.toString();
+		JSONTokener tokener = new JSONTokener(jsonString);
+
+		JSONObject res = (JSONObject) tokener.nextValue();
+		JSONArray resHits = res.getJSONArray("hits");
+		String recipeNames[] = new String[resHits.length()];
+
+		for (int i=0; i<resHits.length();i++){
+			recipeNames[i] = resHits.getJSONObject(i).recipe.getString("label");
+			System.out.println(recipeNames[i]);
+		}
 
 	}
 
@@ -102,7 +120,7 @@ public class Recipe {
 		URL urlObject = new URL(url);
 		HttpsURLConnection connectionInstance = (HttpsURLConnection) urlObject.openConnection();
 
-		//add reuqest header
+		//add request header
 		connectionInstance.setRequestMethod("POST");
 		connectionInstance.setRequestProperty("User-Agent", USER_AGENT);
 		connectionInstance.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
