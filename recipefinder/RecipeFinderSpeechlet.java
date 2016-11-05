@@ -165,6 +165,12 @@ public class RecipeFinderSpeechlet implements Speechlet {
         }
         inReader.close();
 
+        PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+        outputSpeech.setText("BLT sandwich");
+
+        return SpeechletResponse.newTellResponse(outputSpeech);
+
+
         return response.toString();
     }
 
