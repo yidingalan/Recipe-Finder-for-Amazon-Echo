@@ -27,21 +27,22 @@ public class Recipe {
 		Recipe http = new Recipe();
 
 		System.out.println("1) Send HTTP GET to API");
-		String response = http.sendGet();
+		String response = http.sendGet("pork");
 
 		http.parseJsonParams(response);
 	}
 
 	//function for HTTP GET request
-	private String sendGet() throws Exception { //need to throw exception to comply with Java's Catch or Specify requirement
+	private String sendGet(String q) throws Exception { //need to throw exception to comply with Java's Catch or Specify requirement
 
 		/*
 		TODO:
 		insert parameters for web service, all are hardcoded atm
 		*/
+		String query = q;
 
 		//endpoint basename
-		String url = "https://api.edamam.com/search?q=chicken&app_id=ee303027&app_key=81e0095fb042c3fbd7f27524f77c0ac4&from=0&to=1&calories=gte%20591,%20lte%20722&health=alcohol-free";
+		String url = "https://api.edamam.com/search?q="+query+"&app_id=ee303027&app_key=81e0095fb042c3fbd7f27524f77c0ac4&from=0&to=1&calories=gte%20591,%20lte%20722&health=alcohol-free";
 		//String url = "http://addb.absolutdrinks.com/drinks/absolut-cosmopolitan/?apiKey=9cdfee635b854c3792ac51c4957d61c6";
 
 		//url object
@@ -140,16 +141,31 @@ public class Recipe {
 
 	private void parseJsonParams(String inputJson) throws Exception {
 		String jsonString = inputJson;
+		
+		//parser
 		JSONTokener tokener = new JSONTokener(jsonString);
 
-		JSONObject res = (JSONObject) tokener.nextValue();
+		//object representation of string
+		JSONObject res = (JSONObject) tokener.nextValue(); 
 		JSONArray resHits = res.getJSONArray("hits");
-		String recipeNames[] = new String[resHits.length()];
 
+		//taking top recipe only, since from and to tags are 0, 1
+		String recipeName;
+		String calories;
+		JSONArray ingredients;
+
+		String recipeNames[] = new String[resHits.length()];
 		for (int i=0; i<resHits.length();i++){
 			JSONObject current = resHits.getJSONObject(i);
 			recipeNames[i] = current.getJSONObject("recipe").getString("label");
-			System.out.println(recipeNames[i]);
+			
+			recipeName = current.getJSONObject("recipe").getString("label");
+			ingredients = current.getJSONObject("recipe").getJSONArray("ingredientLines");
+
+			//System.out.println(ingredients.getClass().getName());
+			for(i=0; i<ingredients.length(); i++){
+				System.out.println(ingredients.getString(i));
+			}
 		}
 	}
 }
