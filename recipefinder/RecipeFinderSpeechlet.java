@@ -19,7 +19,7 @@ import com.amazon.speech.ui.SimpleCard;
 
 //Handle speechlet request
 
-public class HelloWorldSpeechlet implements Speechlet {
+public class RecipeFinderSpeechlet implements Speechlet {
     private static final Logger log = LoggerFactory.getLogger(recipeFinderSpeechlet.class);
 
     @Override
@@ -105,7 +105,7 @@ public class HelloWorldSpeechlet implements Speechlet {
 
     }
 
-    
+
 
     //When the user needs help
     private SpeechletResponse getHelp(){
