@@ -101,7 +101,10 @@ public class RecipeFinderSpeechlet implements Speechlet {
     * SpeechletResponse: defines the text to speak to the user
     */
     private SpeechletResponse GetRecipeResponse(Intent intent){
+        PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+        outputSpeech.setText("BLT sandwich");
 
+        return SpeechletResponse.newTellResponse(outputSpeech);
 
     }
 
