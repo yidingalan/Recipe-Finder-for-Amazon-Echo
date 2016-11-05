@@ -30,16 +30,26 @@ public class HelloWorldSpeechlet implements Speechlet {
         // any initialization logic goes here
     }
 
-    //When Alexa gets launhed
+    //When the skill gets launhed
+    //when the user says "Alexa, start 'Recipe Finder' "
     @Override
     public SpeechletResponse onLaunch(final LaunchRequest request, final Session session)
             throws SpeechletException {
         log.info("onLaunch requestId={}, sessionId={}", request.getRequestId(),
                 session.getSessionId());
-        //return getWelcomeResponse();
+
+        String speechOutput = "Welcome to Receipe Finder. You can list all the ingredients you have at your kitchen,"
+                + "and I will help you find the best recipe..."
+                + "Now, what ingredients do you have?";
+
+        //If the user does not reply or says something that is hard to understand
+        String repromptText = "For instructions on what you can say, please say help me.";
+
+        return newAskResponse(speechOutput, repromptText);
+
     }
 
-    //When Alexa gets asked questions
+    //When Alexa gets the input from the user -- "kale, beef, garlic"
     @Override
     public SpeechletResponse onIntent(final IntentRequest request, final Session session)
             throws SpeechletException {
@@ -50,9 +60,29 @@ public class HelloWorldSpeechlet implements Speechlet {
         String intentName = (intent != null) ? intent.getName() : null;
 
         //If the user is giving the correct intent input
-        if ("GetRecipeIntent".equals(intentName)) {
-            return GetRecipeResponse();
-        } else {
+        if ("RecipeIntent".equals(intentName)) {
+            return GetRecipeResponse(intent);
+        }
+        //If the user needs help
+        else if ("AMAZON.HelpIntent".equals(intentName)) {
+            return getHelp();
+        }
+        //If the user says stop
+        else if ("AMAZON.StopIntent".equals(intentName)) {
+            PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+            outputSpeech.setText("Bye");
+
+            return SpeechletResponse.newTellResponse(outputSpeech);
+        }
+        //If the user cancels the request
+        else if ("AMAZON.CancelIntent".equals(intentName)) {
+            PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+            outputSpeech.setText("Bye");
+
+            return SpeechletResponse.newTellResponse(outputSpeech);
+        }
+        //Error handling for invalid input
+        else {
             throw new SpeechletException("Invalid Intent");
         }
     }
@@ -70,7 +100,34 @@ public class HelloWorldSpeechlet implements Speechlet {
     * logic for getting the recipes
     * SpeechletResponse: defines the text to speak to the user
     */
-    private SpeechletResponse GetRecipeResponse(){
-        
+    private SpeechletResponse GetRecipeResponse(Intent intent){
+
 
     }
+
+    
+
+    //When the user needs help
+    private SpeechletResponse getHelp(){
+        String speechOutput = "You only need to list all the items,"
+            + "for example, you can say kale, beef, garlic,"
+            + "Now, what do you have at your kitchen?";
+
+        String repromptText = "Or you can just say one word kale,"
+            + "or exit... Now, what do you have at your kitchen?";
+
+        return newAskResponse(speechOutput, repromptText);
+    }
+
+    //Just for prompting user for response and reprompt if they don't answer
+    private SpeechletResponse newAskResponse(String stringOutput, String repromptText) {
+           PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+           outputSpeech.setText(stringOutput);
+
+           PlainTextOutputSpeech repromptOutputSpeech = new PlainTextOutputSpeech();
+           repromptOutputSpeech.setText(repromptText);
+           Reprompt reprompt = new Reprompt();
+           reprompt.setOutputSpeech(repromptOutputSpeech);
+
+           return SpeechletResponse.newAskResponse(outputSpeech, reprompt);
+       }
