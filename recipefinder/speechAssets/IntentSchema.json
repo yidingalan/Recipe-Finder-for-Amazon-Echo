@@ -1,10 +1,13 @@
 {
     "intents": [
         {
-            "intent": "AMAZON.ResumeIntent"
+            "intent": "AMAZON.HelpIntent"
         },
         {
-            "intent": "AMAZON.PauseIntent"
+            "intent": "AMAZON.StopIntent"
+        },
+        {
+            "intent": "AMAZON.CancelIntent"
         },
         {
             "intent": "GetRecipeIntent",
