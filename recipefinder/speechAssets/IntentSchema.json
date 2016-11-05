@@ -1,0 +1,19 @@
+{
+    "intents": [
+        {
+            "intent": "AMAZON.ResumeIntent"
+        },
+        {
+            "intent": "AMAZON.PauseIntent"
+        },
+        {
+            "intent": "GetRecipeIntent",
+            "slots": [
+                {
+                    "name": "Recipe",
+                    "type": "AMAZON.LITERAL"
+                }
+            ]
+        }
+    ]
+}
