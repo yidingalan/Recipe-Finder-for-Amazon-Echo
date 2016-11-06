@@ -1,10 +1,14 @@
 package recipefinder;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazon.speech.slu.Intent;
-import com.amazon.speech.slu.Slot;
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.LaunchRequest;
 import com.amazon.speech.speechlet.Session;
@@ -15,25 +19,17 @@ import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
-import com.amazon.speech.ui.SimpleCard;
+import com.amazonaws.util.json.JSONArray;
+import com.amazonaws.util.json.JSONObject;
+import com.amazonaws.util.json.JSONTokener;
 
-//Lol maybe this will work??
-/*
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import javax.net.ssl.HttpsURLConnection;
-
-//Java library concerning JSON parsing
-import org.json.*;
-*/
 
 
 //Handle speechlet request
 
 public class RecipeFinderSpeechlet implements Speechlet {
+	
+	private final String USER_AGENT = "Mozilla/5.0";
     private static final Logger log = LoggerFactory.getLogger(RecipeFinderSpeechlet.class);
 
     public void onSessionStarted(final SessionStartedRequest request, final Session session)
@@ -71,7 +67,7 @@ public class RecipeFinderSpeechlet implements Speechlet {
         String intentName = (intent != null) ? intent.getName() : null;
 
         //If the user is giving the correct intent input
-        if ("RecipeIntent".equals(intentName)) {
+        if ("GetRecipeIntent".equals(intentName)) {
             return GetRecipeResponse(intent);
         }
         //If the user needs help
@@ -110,23 +106,37 @@ public class RecipeFinderSpeechlet implements Speechlet {
     /**
     * logic for getting the recipes
     * SpeechletResponse: defines the text to speak to the user
+     * @throws Exception 
     */
-    //PUT SHIT HERE
-    private SpeechletResponse GetRecipeResponse(Intent intent){
+
+    private SpeechletResponse GetRecipeResponse(Intent intent) {
         //String response = sendGet("cheese,vegan");
         //String message = parseJsonParams(response);
-        String message = "AlanWang";
+    	
+    	String input = intent.toString();
+    	log.info(input);
+    	
+    	String response, message = "";
+    	
+    	try{
+        	response = sendGet(input);
+        	message = parseJsonParams(response);
+    	}catch (Exception e){
+    		e.printStackTrace();
+    	};
+    	
         PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
         outputSpeech.setText(message);
 
         return SpeechletResponse.newTellResponse(outputSpeech);
+
     }
     
-    /*
+    
+    
     //function for HTTP GET request
     private String sendGet(String q) throws Exception { //need to throw exception to comply with Java's Catch or Specify requirement
 
-        
         //TODO:
         //insert parameters for web service, all are hardcoded atm
         
@@ -181,12 +191,6 @@ public class RecipeFinderSpeechlet implements Speechlet {
         }
         inReader.close();
 
-        PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-        outputSpeech.setText("BLT sandwich");
-
-        return SpeechletResponse.newTellResponse(outputSpeech);
-
-
         return response.toString();
     }
 
@@ -205,7 +209,10 @@ public class RecipeFinderSpeechlet implements Speechlet {
         JSONArray ingredients;
 
         String out = "default";
-        String recipeNames[] = new String[resHits.length()];
+        JSONObject current = resHits.getJSONObject(0);
+        out = current.getJSONObject("recipe").getString("label");
+        
+        /*String recipeNames[] = new String[resHits.length()];
         int x=0;
         for (int i=0; i<resHits.length();i++){
             JSONObject current = resHits.getJSONObject(i);
@@ -221,10 +228,10 @@ public class RecipeFinderSpeechlet implements Speechlet {
 
         if (x>0){
             out = out + " are the required ingredients";
-        }
+        }*/
         return out;
     }
-    */
+    
 
 
     //When the user needs help
