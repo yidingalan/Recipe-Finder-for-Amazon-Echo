@@ -218,9 +218,9 @@ public class RecipeFinderSpeechlet implements Speechlet {
 
         String out = "default";
         JSONObject current = resHits.getJSONObject(0);
-        out = current.getJSONObject("recipe").getString("label");
+        //out = current.getJSONObject("recipe").getString("label");
         
-        /*String recipeNames[] = new String[resHits.length()];
+        String recipeNames[] = new String[resHits.length()];
         int x=0;
         for (int i=0; i<resHits.length();i++){
             JSONObject current = resHits.getJSONObject(i);
@@ -236,7 +236,7 @@ public class RecipeFinderSpeechlet implements Speechlet {
 
         if (x>0){
             out = out + " are the required ingredients";
-        }*/
+        }
         
         return out;
     }
