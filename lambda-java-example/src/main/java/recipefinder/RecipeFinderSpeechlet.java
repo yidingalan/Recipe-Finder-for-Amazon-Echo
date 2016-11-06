@@ -122,16 +122,16 @@ public class RecipeFinderSpeechlet implements Speechlet {
         }
     	log.info(input);
     	
-    	String response, message = "";
+    	String response, message = "", link = "";
     	
     	try{
         	response = sendGet(input);
         	message = parseJsonParams(response);
+            link = extractMoreInfo(response);
     	}catch (Exception e){
     		e.printStackTrace();
     		message = "caught a network exception";
     	};
-    	
     	
         PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
         outputSpeech.setText(message);
@@ -241,7 +241,22 @@ public class RecipeFinderSpeechlet implements Speechlet {
         return out;
     }
     
-
+    //get url to steps
+    private String extractMoreInfo(String inputJson) throws Exception {
+        String jsonString = inputJson;
+        //parser
+        JSONTokener tokener = new JSONTokener(jsonString);
+        //object representation of string
+        JSONObject res = (JSONObject) tokener.nextValue(); 
+        JSONArray resHits = res.getJSONArray("hits");
+        //taking top recipe only, since from and to tags are 0, 1
+        String recipeName = "default";
+        JSONArray ingredients;
+        String out = "";
+        JSONObject current = resHits.getJSONObject(0);
+        out = current.getJSONObject("recipe").getString("shareAs");
+        return out;
+    }
 
     //When the user needs help
     private SpeechletResponse getHelp(){
