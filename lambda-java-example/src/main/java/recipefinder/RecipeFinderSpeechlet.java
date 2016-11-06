@@ -123,9 +123,9 @@ public class RecipeFinderSpeechlet implements Speechlet {
         }
     	log.info(input);
     	
-        //check input
-        input = cleanInput(input);
-
+    	//Replace the space with comma for the query param 
+    	input = input.replace(" ", ",");
+    	
     	String response, message = "", link = "";
     	
     	try{
@@ -159,16 +159,8 @@ public class RecipeFinderSpeechlet implements Speechlet {
     	}
 
     }
-<<<<<<< HEAD
     
-    //sanitize voice input
-    private String cleanInput(String input){
-        return input.replace(" ", ",");
-    }
     
-=======
-   
->>>>>>> 3988cd6a9e7a9d65e388cd29ee91b1d28ede489e
     //function for HTTP GET request
     private String sendGet(String q) throws Exception { //need to throw exception to comply with Java's Catch or Specify requirement
 
