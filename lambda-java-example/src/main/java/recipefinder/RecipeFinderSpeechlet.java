@@ -122,6 +122,9 @@ public class RecipeFinderSpeechlet implements Speechlet {
         }
     	log.info(input);
     	
+        //check input
+        input = cleanInput(input);
+
     	String response, message = "", link = "";
     	
     	try{
@@ -140,7 +143,10 @@ public class RecipeFinderSpeechlet implements Speechlet {
 
     }
     
-    
+    //sanitize voice input
+    private String cleanInput(String input){
+        return input.replace(" ", ",");
+    }
     
     //function for HTTP GET request
     private String sendGet(String q) throws Exception { //need to throw exception to comply with Java's Catch or Specify requirement
