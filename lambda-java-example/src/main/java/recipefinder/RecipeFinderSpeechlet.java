@@ -20,6 +20,7 @@ import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
+import com.amazon.speech.ui.SimpleCard;
 import com.amazonaws.util.json.JSONArray;
 import com.amazonaws.util.json.JSONObject;
 import com.amazonaws.util.json.JSONTokener;
@@ -136,18 +137,38 @@ public class RecipeFinderSpeechlet implements Speechlet {
     		message = "caught a network exception";
     	};
     	
-        PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-        outputSpeech.setText(message);
+    	//If the message is not empty
+    	if (message != null){
+            PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
+            outputSpeech.setText(message);
+            
+            //setup card for debugging
+            SimpleCard card = new SimpleCard();
+            card.setTitle("User Input" + link);
+            card.setContent(input);
 
-        return SpeechletResponse.newTellResponse(outputSpeech);
+            return SpeechletResponse.newTellResponse(outputSpeech, card);
+    	}
+    	//If it cannot find the recipe
+    	else{
+            String speechOutput =
+                    "I'm sorry, I couldn't find that recipe for you right now"
+            		+ "What else do you need help with?";
+            String repromptSpeech = "What else can I help with?";
+            return newAskResponse(speechOutput, repromptSpeech);
+    	}
 
     }
+<<<<<<< HEAD
     
     //sanitize voice input
     private String cleanInput(String input){
         return input.replace(" ", ",");
     }
     
+=======
+   
+>>>>>>> 3988cd6a9e7a9d65e388cd29ee91b1d28ede489e
     //function for HTTP GET request
     private String sendGet(String q) throws Exception { //need to throw exception to comply with Java's Catch or Specify requirement
 
@@ -229,7 +250,7 @@ public class RecipeFinderSpeechlet implements Speechlet {
         String recipeNames[] = new String[resHits.length()];
         int x=0;
         for (int i=0; i<resHits.length();i++){
-            JSONObject current = resHits.getJSONObject(i);
+            current = resHits.getJSONObject(i);
             recipeNames[i] = current.getJSONObject("recipe").getString("label");
             
             recipeName = current.getJSONObject("recipe").getString("label");
