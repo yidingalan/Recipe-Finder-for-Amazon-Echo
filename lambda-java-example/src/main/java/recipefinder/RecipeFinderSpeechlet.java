@@ -35,8 +35,7 @@ import org.json.*;
 
 public class RecipeFinderSpeechlet implements Speechlet {
     private static final Logger log = LoggerFactory.getLogger(RecipeFinderSpeechlet.class);
-    
-    @Override
+
     public void onSessionStarted(final SessionStartedRequest request, final Session session)
             throws SpeechletException {
         log.info("onSessionStarted requestId={}, sessionId={}", request.getRequestId(),
@@ -46,13 +45,12 @@ public class RecipeFinderSpeechlet implements Speechlet {
 
     //When the skill gets launhed
     //when the user says "Alexa, start 'Recipe Finder' "
-    @Override
     public SpeechletResponse onLaunch(final LaunchRequest request, final Session session)
             throws SpeechletException {
         log.info("onLaunch requestId={}, sessionId={}", request.getRequestId(),
                 session.getSessionId());
 
-        String speechOutput = "Welcome to Receipe Finder. You can list all the ingredients you have at your kitchen,"
+        String speechOutput = "Welcome to Recipe Finder. You can list all the ingredients you have at your kitchen,"
                 + "and I will help you find the best recipe..."
                 + "Now, what ingredients do you have?";
 
@@ -64,7 +62,6 @@ public class RecipeFinderSpeechlet implements Speechlet {
     }
 
     //When Alexa gets the input from the user -- "kale, beef, garlic"
-    @Override
     public SpeechletResponse onIntent(final IntentRequest request, final Session session)
             throws SpeechletException {
         log.info("onIntent requestId={}, sessionId={}", request.getRequestId(),
@@ -101,7 +98,7 @@ public class RecipeFinderSpeechlet implements Speechlet {
         }
     }
 
-    @Override
+
     public void onSessionEnded(final SessionEndedRequest request, final Session session)
             throws SpeechletException {
         log.info("onSessionEnded requestId={}, sessionId={}", request.getRequestId(),
