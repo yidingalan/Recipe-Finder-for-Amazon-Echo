@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazon.speech.slu.Intent;
+import com.amazon.speech.slu.Slot;
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.LaunchRequest;
 import com.amazon.speech.speechlet.Session;
@@ -29,6 +30,7 @@ import com.amazonaws.util.json.JSONTokener;
 
 public class RecipeFinderSpeechlet implements Speechlet {
 	
+	private static final String ITEM_SLOT = "Recipe";
 	private final String USER_AGENT = "Mozilla/5.0";
     private static final Logger log = LoggerFactory.getLogger(RecipeFinderSpeechlet.class);
 
@@ -113,7 +115,11 @@ public class RecipeFinderSpeechlet implements Speechlet {
         //String response = sendGet("cheese,vegan");
         //String message = parseJsonParams(response);
     	
-    	String input = intent.toString();
+        Slot itemSlot = intent.getSlot(ITEM_SLOT);
+        String input = "";
+        if (itemSlot != null && itemSlot.getValue() != null) {
+          input = itemSlot.getValue();
+        }
     	log.info(input);
     	
     	String response, message = "";
@@ -123,7 +129,9 @@ public class RecipeFinderSpeechlet implements Speechlet {
         	message = parseJsonParams(response);
     	}catch (Exception e){
     		e.printStackTrace();
+    		message = "caught a network exception";
     	};
+    	
     	
         PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
         outputSpeech.setText(message);
@@ -229,6 +237,7 @@ public class RecipeFinderSpeechlet implements Speechlet {
         if (x>0){
             out = out + " are the required ingredients";
         }*/
+        
         return out;
     }
     
