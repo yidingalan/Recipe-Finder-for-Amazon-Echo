@@ -19,6 +19,7 @@ import com.amazon.speech.speechlet.Speechlet;
 import com.amazon.speech.speechlet.SpeechletException;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazon.speech.ui.PlainTextOutputSpeech;
+import com.amazon.speech.ui.SsmlOutputSpeech;
 import com.amazon.speech.ui.Reprompt;
 import com.amazon.speech.ui.SimpleCard;
 import com.amazonaws.util.json.JSONArray;
@@ -30,7 +31,7 @@ import com.amazonaws.util.json.JSONTokener;
 //Handle speechlet request
 
 public class RecipeFinderSpeechlet implements Speechlet {
-	
+
 	private static final String ITEM_SLOT = "Recipe";
 	private final String USER_AGENT = "Mozilla/5.0";
     private static final Logger log = LoggerFactory.getLogger(RecipeFinderSpeechlet.class);
@@ -109,25 +110,25 @@ public class RecipeFinderSpeechlet implements Speechlet {
     /**
     * logic for getting the recipes
     * SpeechletResponse: defines the text to speak to the user
-     * @throws Exception 
+     * @throws Exception
     */
 
     private SpeechletResponse GetRecipeResponse(Intent intent) {
         //String response = sendGet("cheese,vegan");
         //String message = parseJsonParams(response);
-    	
+
         Slot itemSlot = intent.getSlot(ITEM_SLOT);
         String input = "";
         if (itemSlot != null && itemSlot.getValue() != null) {
           input = itemSlot.getValue();
         }
     	log.info(input);
-    	
-    	//Replace the space with comma for the query param 
+
+    	//Replace the space with comma for the query param
     	input = input.replace(" ", ",");
-    	
+
     	String response, message = "", link = "";
-    	
+
     	try{
         	response = sendGet(input);
         	message = parseJsonParams(response);
@@ -136,12 +137,12 @@ public class RecipeFinderSpeechlet implements Speechlet {
     		e.printStackTrace();
     		message = "caught a network exception";
     	};
-    	
+
     	//If the message is not empty
     	if (message != null){
-            PlainTextOutputSpeech outputSpeech = new PlainTextOutputSpeech();
-            outputSpeech.setText(message);
-            
+            SsmlOutputSpeech outputSpeech = new SsmlOutputSpeech();
+            outputSpeech.setSsml(message);
+
             //setup card for debugging
             SimpleCard card = new SimpleCard();
             card.setTitle("User Input" + link);
@@ -159,14 +160,14 @@ public class RecipeFinderSpeechlet implements Speechlet {
     	}
 
     }
-    
-    
+
+
     //function for HTTP GET request
     private String sendGet(String q) throws Exception { //need to throw exception to comply with Java's Catch or Specify requirement
 
         //TODO:
         //insert parameters for web service, all are hardcoded atm
-        
+
         String query = q;
 
         //endpoint basename
@@ -176,10 +177,10 @@ public class RecipeFinderSpeechlet implements Speechlet {
         //url object
         URL urlObject = new URL(url);
 
-        
+
         //openConnection() returns a URLConnection instance that represents a connection to the remote object referred to by the URL,
         //then casts the return instance to type HttpURLConnection.
-        
+
         //parses the URL, finds the protocol, and creates the HttpURLConnection object
         HttpURLConnection connectionInstance = (HttpURLConnection) urlObject.openConnection();
 
@@ -189,11 +190,11 @@ public class RecipeFinderSpeechlet implements Speechlet {
         //set the http headers and all that bullshit
         connectionInstance.setRequestProperty("User-Agent", USER_AGENT); //identify client specs to server, in this case simulate 'Mozilla/5.0'
 
-        
+
         //Pretty sure this line is redundant since, as Java Docs put it:
         //"Operations that depend on being connected will implicitly perform the connection, if necessary."
         //i.e. that geResponseCode shit below
-        
+
         //execute request
         connectionInstance.connect();
 
@@ -223,12 +224,12 @@ public class RecipeFinderSpeechlet implements Speechlet {
 
     private String parseJsonParams(String inputJson) throws Exception {
         String jsonString = inputJson;
-        
+
         //parser
         JSONTokener tokener = new JSONTokener(jsonString);
 
         //object representation of string
-        JSONObject res = (JSONObject) tokener.nextValue(); 
+        JSONObject res = (JSONObject) tokener.nextValue();
         JSONArray resHits = res.getJSONArray("hits");
 
         //taking top recipe only, since from and to tags are 0, 1
@@ -238,39 +239,37 @@ public class RecipeFinderSpeechlet implements Speechlet {
         String out = "default";
         JSONObject current = resHits.getJSONObject(0);
         //out = current.getJSONObject("recipe").getString("label");
-        
+
         String recipeNames[] = new String[resHits.length()];
         int x=0;
         for (int i=0; i<resHits.length();i++){
             current = resHits.getJSONObject(i);
             recipeNames[i] = current.getJSONObject("recipe").getString("label");
-            
+
             recipeName = current.getJSONObject("recipe").getString("label");
             ingredients = current.getJSONObject("recipe").getJSONArray("ingredientLines");
-            out = "With those ingredients you could make "+recipeName+".";
+            out = "<speak>With those ingredients you could make "+recipeName+".";
+						out = out + " The full list of ingredients you will need for this dish are ";
             for (x=0; x<ingredients.length(); x++){
-                out = out + ingredients.getString(x) + ",";
+                out = out + "<break time=\"0.3s\"/>" + ingredients.getString(x) + ",";
             }
         }
 
         if (x>0){
-            out = out + " are the required ingredients";
+            out = out + "</speak>";
         }
-        
+
         return out;
     }
-    
+
     //get url to steps
     private String extractMoreInfo(String inputJson) throws Exception {
         String jsonString = inputJson;
         //parser
         JSONTokener tokener = new JSONTokener(jsonString);
         //object representation of string
-        JSONObject res = (JSONObject) tokener.nextValue(); 
+        JSONObject res = (JSONObject) tokener.nextValue();
         JSONArray resHits = res.getJSONArray("hits");
-        //taking top recipe only, since from and to tags are 0, 1
-        String recipeName = "default";
-        JSONArray ingredients;
         String out = "";
         JSONObject current = resHits.getJSONObject(0);
         out = current.getJSONObject("recipe").getString("shareAs");
