@@ -9,7 +9,7 @@ public final class RecipeFinderSpeechletRequestStreamHandler extends SpeechletRe
     private static final Set<String> supportedApplicationIds = new HashSet<String>();
     static {
         //Alexa application ID goes here - developer portal
-        supportedApplicationIds.add("amzn1.ask.skill.809d5fd6-da87-44ea-8c1f-70f645908e39");
+        supportedApplicationIds.add("your application ID goes here");
     }
 
     public RecipeFinderSpeechletRequestStreamHandler() {
