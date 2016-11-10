@@ -10,12 +10,12 @@ Authors: Deniza, Alan, Jackson
 
 ### AWS Lambda setup
 
-- Create a jar file of lambda-java-example folder - This will be uploaded to AWS Lambda function
+- Create a jar file of **lambda-java-example** folder - Main code is in this folder, and this will be uploaded to AWS Lambda function
 - Create a new AWS Lambda function on AWS console
 - Make sure you select us-east region
 - Select the runtime as Java 8
 - Upload the jar file
-- for the handler section, set it to **recipefinder.RecipeFinderSpeechletRequestStreamHandler**
+- For the handler section, set it to **recipefinder.RecipeFinderSpeechletRequestStreamHandler**
 - Click submit and copy the ARN from the top right corner
 
 ### Amazon developer console setup
@@ -31,7 +31,7 @@ Authors: Deniza, Alan, Jackson
 - Ready to go
 
 ## How to use
-User: Alexa, start Recipe Finer
-Alexa: Welcome to Recipe Finder....
-User: Kale, beef, and tomato
-Alexa: recipe.....
+- User: Alexa, start Recipe Finer
+- Alexa: Welcome to Recipe Finder....
+- User: Kale, beef, and tomato
+- Alexa: recipe.....
